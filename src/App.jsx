@@ -1,4 +1,7 @@
+// Packages
 import { Route, Routes } from "react-router-dom";
+
+// Local Imports
 import "./App.css";
 import Home from "./pages/home";
 import Leaderboard from "./pages/leaderboard";
@@ -13,9 +16,9 @@ function App() {
       <Routes>
         <Route element={<NavbarFooterWrapper />}>
           <Route element={<Home />} path="/" />
+          <Route element={<Quiz />} path="/quiz/:id" />
         </Route>
 
-        <Route element={<Quiz />} path="/quiz/:id" />
         <Route element={<Result />} path="/quiz/:id/result" />
         <Route element={<Leaderboard />} path="/quiz/:id/leaderboard" />
         <Route element={<Login />} path="/login" />
