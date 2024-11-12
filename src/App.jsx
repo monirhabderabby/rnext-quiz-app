@@ -7,6 +7,7 @@ import Home from "./pages/home";
 import Leaderboard from "./pages/leaderboard";
 import Login from "./pages/login";
 import Quiz from "./pages/quiz";
+import Registration from "./pages/registration";
 import Result from "./pages/result";
 import NavbarFooterWrapper from "./routes/navbar-footer";
 
@@ -22,6 +23,7 @@ function App() {
         <Route element={<Result />} path="/quiz/:id/result" />
         <Route element={<Leaderboard />} path="/quiz/:id/leaderboard" />
         <Route element={<Login />} path="/login" />
+        <Route element={<Registration />} path="/registration" />
       </Routes>
     </>
   );
