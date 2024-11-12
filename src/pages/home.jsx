@@ -1,7 +1,17 @@
+// Packages
 import React from "react";
 
+// Local imports
+import Quizzes from "../components/ui/quizzes";
+import Welcome from "../components/ui/welcome";
+
 const Home = () => {
-  return <div className="text-black"></div>;
+  return (
+    <>
+      <Welcome />
+      <Quizzes />
+    </>
+  );
 };
 
 export default Home;

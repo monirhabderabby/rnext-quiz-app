@@ -5,12 +5,16 @@ import Leaderboard from "./pages/leaderboard";
 import Login from "./pages/login";
 import Quiz from "./pages/quiz";
 import Result from "./pages/result";
+import NavbarFooterWrapper from "./routes/navbar-footer";
 
 function App() {
   return (
     <>
       <Routes>
-        <Route element={<Home />} path="/" />
+        <Route element={<NavbarFooterWrapper />}>
+          <Route element={<Home />} path="/" />
+        </Route>
+
         <Route element={<Quiz />} path="/quiz/:id" />
         <Route element={<Result />} path="/quiz/:id/result" />
         <Route element={<Leaderboard />} path="/quiz/:id/leaderboard" />
