@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import DashboardContainer from "./components/ui/dashboard-container";
 import Dashboard from "./pages/dashboard";
+import DashboardQuestionsSetupContainer from "./pages/dashboard-quiz-set-question";
 import Home from "./pages/home";
 import Leaderboard from "./pages/leaderboard";
 import Login from "./pages/login";
@@ -32,6 +33,10 @@ function App() {
         <Route element={<Dashboard />} path="/dashboard">
           <Route element={<DashboardContainer />} index />
           <Route element={<QuizCreationDashboard />} path="quizzes/create" />
+          <Route
+            element={<DashboardQuestionsSetupContainer />}
+            path="quizzes/create/setup"
+          />
         </Route>
       </Routes>
     </>
