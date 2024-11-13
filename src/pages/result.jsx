@@ -12,7 +12,7 @@ const Result = () => {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <div className="flex min-h-screen overflow-hidden">
-        <img src={logo} class="max-h-11 fixed left-6 top-6 z-50" />
+        <img src={logo} className="max-h-11 fixed left-6 top-6 z-50" />
         <ResultOverview
           title="React Hooks Quiz"
           description=" A quiz on React hooks like useState, useEffect, and useContext."

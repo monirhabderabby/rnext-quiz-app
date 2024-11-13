@@ -9,6 +9,7 @@ import Home from "./pages/home";
 import Leaderboard from "./pages/leaderboard";
 import Login from "./pages/login";
 import Quiz from "./pages/quiz";
+import QuizCreationDashboard from "./pages/quiz-creation-dashboard";
 import Registration from "./pages/registration";
 import Result from "./pages/result";
 import NavbarFooterWrapper from "./routes/navbar-footer";
@@ -30,6 +31,7 @@ function App() {
 
         <Route element={<Dashboard />} path="/dashboard">
           <Route element={<DashboardContainer />} index />
+          <Route element={<QuizCreationDashboard />} path="quizzes/create" />
         </Route>
       </Routes>
     </>

@@ -57,20 +57,20 @@ const LoginForm = () => {
           placeholder="Password"
         />
       </div>
-      <div class="mb-6 flex gap-2 items-center">
+      <div className="mb-6 flex gap-2 items-center">
         <input
           {...register("role")}
           type="checkbox"
           id="admin"
-          class="px-4 py-3 rounded-lg border border-gray-300"
+          className="px-4 py-3 rounded-lg border border-gray-300"
         />
-        <label htmlFor="admin" class="block ">
+        <label htmlFor="admin" className="block ">
           Login as Admin
         </label>
       </div>
       <button
         type="submit"
-        class="w-full bg-primary text-white py-3 rounded-lg mb-4"
+        className="w-full bg-primary text-white py-3 rounded-lg mb-4"
       >
         Sign in
       </button>
