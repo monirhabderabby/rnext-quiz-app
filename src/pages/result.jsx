@@ -1,5 +1,8 @@
+// Packages
 import React from "react";
 import { useParams } from "react-router-dom";
+
+// Local imports
 import logo from "../assets/logo-white.svg";
 import ResultAnswerContainer from "../components/ui/result-answer-container";
 import ResultOverview from "../components/ui/result-overview";

@@ -3,6 +3,8 @@ import { Route, Routes } from "react-router-dom";
 
 // Local Imports
 import "./App.css";
+import DashboardContainer from "./components/ui/dashboard-container";
+import Dashboard from "./pages/dashboard";
 import Home from "./pages/home";
 import Leaderboard from "./pages/leaderboard";
 import Login from "./pages/login";
@@ -25,6 +27,10 @@ function App() {
 
         <Route element={<Login />} path="/login" />
         <Route element={<Registration />} path="/registration" />
+
+        <Route element={<Dashboard />} path="/dashboard">
+          <Route element={<DashboardContainer />} index />
+        </Route>
       </Routes>
     </>
   );
