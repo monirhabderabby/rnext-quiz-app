@@ -1,16 +1,34 @@
+// Packages
+import { useMutation } from "@tanstack/react-query";
+import { CircleCheck, TriangleAlert } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+// Local imports
+import { useNavigate } from "react-router-dom";
+import { api } from "../../api";
 import TextFields from "../shared/text-field";
 
 const RegistrationForm = () => {
+  // Mutation to handle registration submission
+  const { isPending, mutate } = useMutation({
+    mutationKey: ["registration"],
+    mutationFn: (body) => api.post("/auth/register", body),
+  });
+
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
+    reset,
   } = useForm();
 
+  // Form submission handler
   const handleRegistration = (formData) => {
+    // Validate password confirmation
     if (formData.password !== formData.confirmPassword) {
       setError("root", {
         type: "random",
@@ -21,14 +39,31 @@ const RegistrationForm = () => {
     } else {
       delete formData.confirmPassword;
 
+      // Set role if 'Register as Admin' checkbox is checked
       if (formData.role) {
         formData.role = "admin";
       } else {
-        formData.role = "user";
+        delete formData.role;
       }
 
-      // do some stuff
-      console.log(formData);
+      // Execute registration mutation
+      mutate(formData, {
+        onSuccess: () => {
+          reset();
+          toast.success("Registration successful! Now you can log in.", {
+            icon: <CircleCheck className="h-5 w-5 text-green-500" />,
+            duration: 5000,
+          });
+
+          navigate("/login");
+        },
+        onError: (err) => {
+          toast.error(err.message, {
+            duration: 5000,
+            icon: <TriangleAlert className="h-5 w-5 " />,
+          });
+        },
+      });
     }
   };
   return (
@@ -45,6 +80,7 @@ const RegistrationForm = () => {
           type="text"
           name="full_name"
           placeholder="John Doe"
+          isLoading={isPending}
         />
         <TextFields
           register={{
@@ -61,6 +97,7 @@ const RegistrationForm = () => {
           type="email"
           name="email"
           placeholder="Email address"
+          isLoading={isPending}
         />
       </div>
 
@@ -85,6 +122,7 @@ const RegistrationForm = () => {
           type="password"
           name="password"
           placeholder="Password"
+          isLoading={isPending}
         />
         <TextFields
           register={{
@@ -106,6 +144,7 @@ const RegistrationForm = () => {
           type="password"
           name="confirmPassword"
           placeholder="Confirm Password"
+          isLoading={isPending}
         />
       </div>
 
@@ -115,6 +154,7 @@ const RegistrationForm = () => {
           type="checkbox"
           id="admin"
           className="px-4 py-3 rounded-lg border border-gray-300"
+          disabled={isPending}
         />
         <label for="admin" className="block ">
           Register as Admin
@@ -126,9 +166,10 @@ const RegistrationForm = () => {
       )}
       <button
         type="submit"
-        className="w-full bg-primary text-white py-3 rounded-lg mb-2"
+        className="w-full bg-primary text-white py-3 rounded-lg mb-2 "
+        disabled={isPending}
       >
-        Create Account
+        {isPending ? "Creating a new account..." : "Create Account"}
       </button>
     </form>
   );
