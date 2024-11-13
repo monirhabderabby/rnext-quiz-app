@@ -18,10 +18,11 @@ function App() {
         <Route element={<NavbarFooterWrapper />}>
           <Route element={<Home />} path="/" />
           <Route element={<Quiz />} path="/quiz/:id" />
+          <Route element={<Leaderboard />} path="/quiz/:id/leaderboard" />
         </Route>
 
         <Route element={<Result />} path="/quiz/:id/result" />
-        <Route element={<Leaderboard />} path="/quiz/:id/leaderboard" />
+
         <Route element={<Login />} path="/login" />
         <Route element={<Registration />} path="/registration" />
       </Routes>
