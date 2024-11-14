@@ -1,6 +1,10 @@
 import React from "react";
+import useAuth from "../../hooks/useAuth";
 
 const Welcome = () => {
+  const { auth } = useAuth();
+  if (!auth) return null;
+  const { full_name } = auth?.user || {};
   return (
     <div className="text-center mb-12">
       <img
@@ -13,7 +17,7 @@ const Welcome = () => {
         className="text-4xl font-bold text-gray-700"
         style={{ fontFamily: "Jaro" }}
       >
-        Saad Hasan
+        {full_name}
       </h2>
     </div>
   );

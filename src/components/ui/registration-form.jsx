@@ -3,33 +3,42 @@ import { useMutation } from "@tanstack/react-query";
 import { CircleCheck, TriangleAlert } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 // Local imports
-import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import useAuth from "../../hooks/useAuth";
 import TextFields from "../shared/text-field";
 
+// Define the RegistrationForm component for handling user registration
 const RegistrationForm = () => {
-  // Mutation to handle registration submission
+  const navigate = useNavigate();
+  const { setLoginInfo } = useAuth();
+
+  // Set up the mutation function for registration using react-query
   const { isPending, mutate } = useMutation({
     mutationKey: ["registration"],
     mutationFn: (body) => api.post("/auth/register", body),
   });
 
-  const navigate = useNavigate();
+  // Configure form handling with react-hook-form
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
     reset,
+    watch,
   } = useForm();
 
-  // Form submission handler
+  // Watch 'role' field to determine if the admin checkbox is selected
+  const isAdminSelected = watch("role");
+
+  // handle form submission for registration
   const handleRegistration = (formData) => {
-    // Validate password confirmation
     if (formData.password !== formData.confirmPassword) {
+      // Set error if passwords do not match
       setError("root", {
         type: "random",
         message:
@@ -39,26 +48,32 @@ const RegistrationForm = () => {
     } else {
       delete formData.confirmPassword;
 
-      // Set role if 'Register as Admin' checkbox is checked
-      if (formData.role) {
-        formData.role = "admin";
-      } else {
-        delete formData.role;
-      }
+      // Prepare final data for submission
+      formData = {
+        ...formData,
+        role: formData.role ? "admin" : undefined,
+      };
+      delete formData.confirmPassword; // Remove confirmPassword from final data
 
-      // Execute registration mutation
+      // Execute the mutation with formData
       mutate(formData, {
         onSuccess: () => {
+          setLoginInfo({
+            ...formData,
+            role: formData.role ? true : false,
+          });
           reset();
           toast.success("Registration successful! Now you can log in.", {
             icon: <CircleCheck className="h-5 w-5 text-green-500" />,
             duration: 5000,
           });
 
-          navigate("/login");
+          navigate("/login"); // Redirect to login page
         },
         onError: (err) => {
-          toast.error(err.message, {
+          // Display error toast message
+          const message = err.response?.data?.message || err.message;
+          toast.error(message, {
             duration: 5000,
             icon: <TriangleAlert className="h-5 w-5 " />,
           });
@@ -70,7 +85,7 @@ const RegistrationForm = () => {
     <form onSubmit={handleSubmit(handleRegistration)}>
       <div className="">
         <TextFields
-          register={{
+          registerOptions={{
             ...register("full_name", {
               required: "Please enter your full name.",
             }),
@@ -83,7 +98,7 @@ const RegistrationForm = () => {
           isLoading={isPending}
         />
         <TextFields
-          register={{
+          registerOptions={{
             ...register("email", {
               required: "Please enter your email address.",
               pattern: {
@@ -103,7 +118,7 @@ const RegistrationForm = () => {
 
       <div className="flex  gap-4">
         <TextFields
-          register={{
+          registerOptions={{
             ...register("password", {
               required: "Please enter your password.",
               minLength: {
@@ -125,7 +140,7 @@ const RegistrationForm = () => {
           isLoading={isPending}
         />
         <TextFields
-          register={{
+          registerOptions={{
             ...register("confirmPassword", {
               required: "Please enter your password.",
               minLength: {
@@ -153,10 +168,12 @@ const RegistrationForm = () => {
           {...register("role")}
           type="checkbox"
           id="admin"
+          name="role"
           className="px-4 py-3 rounded-lg border border-gray-300"
           disabled={isPending}
+          checked={Boolean(isAdminSelected)}
         />
-        <label for="admin" className="block ">
+        <label htmlFor="admin" className="block ">
           Register as Admin
         </label>
       </div>

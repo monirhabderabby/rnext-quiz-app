@@ -2,7 +2,7 @@ import React from "react";
 
 const TextFields = ({
   label,
-  register,
+  registerOptions,
   errors,
   name,
   type,
@@ -15,7 +15,7 @@ const TextFields = ({
         {label}
       </label>
       <input
-        {...register}
+        {...registerOptions}
         type={type}
         id={name}
         name={name}

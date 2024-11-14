@@ -2,28 +2,42 @@
 import React from "react";
 
 // Local imports
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.svg";
+import useAuth from "../../hooks/useAuth";
 
 const Navbar = () => {
+  const { auth, setAuth } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setAuth(null);
+    navigate(0);
+  };
+
   return (
     <header className="flex justify-between items-center mb-12">
       <img src={logo} className="h-7" />
       <div>
-        <Link
-          to="/login"
-          className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
-          style={{ fontFamily: "Jaro" }}
-        >
-          Login
-        </Link>
+        {!auth && (
+          <Link
+            to="/login"
+            className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
+            style={{ fontFamily: "Jaro" }}
+          >
+            Login
+          </Link>
+        )}
 
-        <button
-          className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
-          style={{ fontFamily: "Jaro" }}
-        >
-          Logout
-        </button>
+        {auth && (
+          <button
+            className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
+            style={{ fontFamily: "Jaro" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        )}
       </div>
     </header>
   );
