@@ -1,9 +1,20 @@
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Link } from "react-router-dom";
+import useAxios from "../../hooks/useAxios";
 import DashboardQuizCard from "../shared/cards/dashboard-quiz-card";
 import { icons } from "./icons";
 
 const DashboardContainer = () => {
+  const { api } = useAxios();
+
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["quizzes"],
+    queryFn: () => api.get("/admin/quizzes"),
+  });
+
+  if (isLoading) return;
+
   return (
     <main className="flex-grow p-10">
       <header className="mb-8">

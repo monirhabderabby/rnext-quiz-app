@@ -22,6 +22,7 @@ const LoginForm = () => {
   const { isPending, mutate } = useMutation({
     mutationKey: ["login"],
     mutationFn: (body) => api.post("/auth/login", body),
+    retry: false,
   });
 
   // Set up the form with default values from loginInfo (if available)

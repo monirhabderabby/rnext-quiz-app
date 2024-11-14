@@ -6,6 +6,8 @@ const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(null);
   const [loginInfo, setLoginInfo] = useState(null);
 
+  console.log(auth);
+
   // useEffect hook to initialize authentication state from cookies on component mount
   useEffect(() => {
     // Retrieve user data from the "user" cookie, if available

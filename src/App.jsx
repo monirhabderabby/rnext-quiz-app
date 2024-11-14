@@ -59,7 +59,7 @@ function App() {
             <Route element={<QuizCreationDashboard />} path="quizzes/create" />
             <Route
               element={<DashboardQuestionsSetupContainer />}
-              path="quizzes/create/setup"
+              path="quizzes/create/:id/setup"
             />
           </Route>
         </Route>
