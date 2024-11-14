@@ -1,6 +1,5 @@
 import React from "react";
-import { icons } from "../lib/icons";
-
+import { icons } from "../components/ui/icons";
 const DashboardQuestionsSetupContainer = () => {
   return (
     <main className="md:flex-grow px-4 sm:px-6 lg:px-8 py-8">

@@ -5,12 +5,14 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.svg";
 import useAuth from "../../hooks/useAuth";
+import { removeCookie } from "../../lib/cookies";
 
 const Navbar = () => {
   const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    removeCookie("user");
     setAuth(null);
     navigate(0);
   };

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { icons } from "../components/ui/icons";
 import QuizCreateForm from "../components/ui/quiz-create-form";
-import { icons } from "../lib/icons";
 
 const QuizCreationDashboard = () => {
   return (

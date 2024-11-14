@@ -1,5 +1,5 @@
 import React from "react";
-import { icons } from "../../../lib/icons";
+import { icons } from "../../ui/icons";
 
 const DashboardQuizCard = ({ title, description }) => {
   return (

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 // Local imports
 import { api } from "../../api";
 import useAuth from "../../hooks/useAuth";
+import { setCookie } from "../../lib/cookies";
 import TextFields from "../shared/text-field";
 
 // Define the LoginForm component, responsible for handling user login
@@ -59,9 +60,11 @@ const LoginForm = () => {
         });
       },
       onSuccess: (response) => {
-        // Handle successful login by storing user data and redirecting
+        // Handle successful login by storing user data to context and browser cookies and redirecting
+        setCookie("user", JSON.stringify(response?.data?.data));
         setAuth(response?.data?.data);
         setLoginInfo(null);
+
         reset();
         navigate("/");
 

@@ -13,7 +13,9 @@ import Quiz from "./pages/quiz";
 import QuizCreationDashboard from "./pages/quiz-creation-dashboard";
 import Registration from "./pages/registration";
 import Result from "./pages/result";
+import AdminRoutes from "./routes/admin-routes";
 import NavbarFooterWrapper from "./routes/navbar-footer";
+import PrivateRoutes from "./routes/private-routes";
 
 function App() {
   return (
@@ -21,22 +23,45 @@ function App() {
       <Routes>
         <Route element={<NavbarFooterWrapper />}>
           <Route element={<Home />} path="/" />
-          <Route element={<Quiz />} path="/quiz/:id" />
-          <Route element={<Leaderboard />} path="/quiz/:id/leaderboard" />
+          <Route
+            element={
+              <PrivateRoutes>
+                <Quiz />
+              </PrivateRoutes>
+            }
+            path="/quiz/:id"
+          />
+          <Route
+            element={
+              <PrivateRoutes>
+                <Leaderboard />
+              </PrivateRoutes>
+            }
+            path="/quiz/:id/leaderboard"
+          />
         </Route>
 
-        <Route element={<Result />} path="/quiz/:id/result" />
+        <Route
+          element={
+            <PrivateRoutes>
+              <Result />
+            </PrivateRoutes>
+          }
+          path="/quiz/:id/result"
+        />
 
         <Route element={<Login />} path="/login" />
         <Route element={<Registration />} path="/registration" />
 
-        <Route element={<Dashboard />} path="/dashboard">
-          <Route element={<DashboardContainer />} index />
-          <Route element={<QuizCreationDashboard />} path="quizzes/create" />
-          <Route
-            element={<DashboardQuestionsSetupContainer />}
-            path="quizzes/create/setup"
-          />
+        <Route element={<AdminRoutes />}>
+          <Route element={<Dashboard />} path="/dashboard">
+            <Route element={<DashboardContainer />} index />
+            <Route element={<QuizCreationDashboard />} path="quizzes/create" />
+            <Route
+              element={<DashboardQuestionsSetupContainer />}
+              path="quizzes/create/setup"
+            />
+          </Route>
         </Route>
       </Routes>
     </>

@@ -1,5 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import DashboardQuizCard from "../shared/cards/dashboard-quiz-card";
+import { icons } from "./icons";
 
 const DashboardContainer = () => {
   return (
@@ -10,23 +12,10 @@ const DashboardContainer = () => {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <a href="./quiz_set_page.html" className="group">
+        <Link to="quizzes/create" className="group">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 ">
             <div className="text-buzzr-purple mb-4 group-hover:scale-105 transition-all">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
+              {icons.plus}
             </div>
             <h3 className="font-semibold text-lg mb-2 group-hover:scale-105 transition-all">
               Create a new quiz
@@ -35,7 +24,7 @@ const DashboardContainer = () => {
               Build from the ground up
             </p>
           </div>
-        </a>
+        </Link>
 
         <DashboardQuizCard
           title="JavaScript Basics Quiz"

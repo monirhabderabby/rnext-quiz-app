@@ -2,9 +2,15 @@ import React from "react";
 import useAuth from "../../hooks/useAuth";
 
 const Welcome = () => {
+  // Retrieve authentication information from custom hook
   const { auth } = useAuth();
+
+  // If user is not authenticated, return null to render nothing
   if (!auth) return null;
+
+  // If user is not authenticated, return null to render nothing
   const { full_name } = auth?.user || {};
+
   return (
     <div className="text-center mb-12">
       <img
