@@ -40,7 +40,7 @@ export const icons = {
   ),
   chevronRight: (
     <svg
-      class="fill-current w-3 h-3 mx-3"
+      className="fill-current w-3 h-3 mx-3"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 320 512"
     >
