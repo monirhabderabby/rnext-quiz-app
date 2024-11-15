@@ -1,5 +1,5 @@
 // Packages
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CircleCheck, TriangleAlert } from "lucide-react";
 import React, { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -16,6 +16,8 @@ const QuizQuestionForm = () => {
     mutationKey: ["questions"],
     mutationFn: (body) => api.post(`/admin/quizzes/${id}/questions`, body),
   });
+
+  const queryClient = useQueryClient();
 
   // initialize react hook form
   const {
@@ -80,6 +82,7 @@ const QuizQuestionForm = () => {
           duration: 5000,
         });
         reset();
+        queryClient.invalidateQueries(["quizzes"]);
       },
     });
   };

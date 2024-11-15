@@ -1,196 +1,108 @@
-import React from "react";
-import { Link } from "react-router-dom";
+// Packages
+import { useQuery } from "@tanstack/react-query";
+import { Loader2, TriangleAlert } from "lucide-react";
+import React, { useMemo } from "react";
+import { Link, useParams } from "react-router-dom";
+
+// Local imports
+import QuestionCard from "../components/shared/cards/question-card";
+import DashboardQuizAction from "../components/ui/dashboard-quiz-action";
 import DashboardQuizSetHeader from "../components/ui/dashboard-quiz-set-header";
 import { icons } from "../components/ui/icons";
 import QuizQuestionForm from "../components/ui/quiz-question-form";
+import useAxios from "../hooks/useAxios";
+
 const DashboardQuestionsSetupContainer = () => {
-  return (
-    <main className="md:flex-grow px-4 sm:px-6 lg:px-8 py-8">
-      <Nav />
-      <div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-8 lg:gap-12">
-          {/* <!-- Left Column --> */}
-          <div className="">
-            <DashboardQuizSetHeader
-              title="Binary Tree Quiz"
-              totalQuestions={2}
-              description="Test understanding of binary tree traversal methods, tree properties,
-        and algorithms."
-            />
+  const { api } = useAxios();
+  const { id } = useParams();
 
-            <QuizQuestionForm />
-          </div>
+  // Query setup for getting all quizzes
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ["quizzes"],
+    queryFn: () => api.get(`/admin/quizzes`),
+  });
 
-          {/* <!-- Right Column --> */}
-          <div className="px-4">
-            {/* <!-- Question One --> */}
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    1. Which of the following is NOT a binary tree traversal
-                    method?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                      checked
-                    />
-                    <span>Inorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Preorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Postorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Crossorder</span>
-                  </label>
-                </div>
-              </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
+  const { currentQuiz, questions } = useMemo(() => {
+    const quizSetLists = data?.data;
+
+    // Find the quiz with the specific id
+    const current = quizSetLists?.find((item) => item.id === id);
+
+    // If current is undefined, return default values
+    if (!current) return { currentQuiz: null, questions: [] };
+
+    return {
+      currentQuiz: current,
+      questions: current?.Questions || [],
+    };
+  }, [data?.data]);
+
+  let content;
+
+  if (isLoading) {
+    content = (
+      <div className="w-[calc(100%-256px)] min-h-screen flex justify-center items-center">
+        <div className="flex flex-col items-center gap-y-2">
+          <Loader2 className="animate-spin" />
+          <p>Retrieving data for you...</p>
+        </div>
+      </div>
+    );
+  } else if (isError) {
+    content = (
+      <div className="w-[calc(100%-256px)] min-h-screen flex justify-center items-center">
+        <div className="flex flex-col justify-center items-center gap-y-2 text-red-500">
+          <TriangleAlert />
+          {error?.message || "Something went wrong"}
+        </div>
+      </div>
+    );
+  } else {
+    content = (
+      <main className="md:flex-grow px-4 sm:px-6 lg:px-8 py-8">
+        <div className="w-full flex justify-between items-center">
+          <Nav />
+          <DashboardQuizAction
+            quizId={currentQuiz?.id}
+            isPublished={currentQuiz?.status !== "draft"}
+            initialData={currentQuiz}
+          />
+        </div>
+        <div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-8 lg:gap-12">
+            {/* <!-- Left Column --> */}
+            <div className="">
+              <DashboardQuizSetHeader
+                title={currentQuiz?.title}
+                totalQuestions={questions?.length}
+                description={currentQuiz?.description}
+              />
+
+              <QuizQuestionForm />
             </div>
 
-            {/* <!-- Question Two --> */}
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    2. What is the maximum number of nodes at level 'L' in a
-                    binary tree?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                      checked
-                    />
-                    <span>2^L</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>L</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>2^(L-1)</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>2L</span>
-                  </label>
-                </div>
-              </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
-            </div>
-
-            {/* <!-- Question 3 --> */}
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    3. What is the height of an empty binary tree?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                      checked
-                    />
-                    <span>0</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>-1</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>1</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Undefined</span>
-                  </label>
-                </div>
-              </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
+            {/* <!-- Right Column --> */}
+            <div className="px-4">
+              {/* <!-- Question One --> */}
+              {questions?.map(
+                ({ id, question, options, correctAnswer }, index) => (
+                  <QuestionCard
+                    key={id}
+                    question={`${index + 1}. ${question}`}
+                    options={options}
+                    correctAnswer={correctAnswer}
+                    questionId={id}
+                  />
+                )
+              )}
             </div>
           </div>
         </div>
-      </div>
-    </main>
-  );
+      </main>
+    );
+  }
+
+  return content;
 };
 
 export default DashboardQuestionsSetupContainer;
