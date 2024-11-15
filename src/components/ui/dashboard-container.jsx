@@ -1,19 +1,45 @@
 import { useQuery } from "@tanstack/react-query";
+import { TriangleAlert } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 import useAxios from "../../hooks/useAxios";
-import DashboardQuizCard from "../shared/cards/dashboard-quiz-card";
+import DashboardQuizCard, {
+  DashboardQuizCardSkeleton,
+} from "../shared/cards/dashboard-quiz-card";
 import { icons } from "./icons";
 
 const DashboardContainer = () => {
   const { api } = useAxios();
 
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, error } = useQuery({
     queryKey: ["quizzes"],
     queryFn: () => api.get("/admin/quizzes"),
   });
 
   if (isLoading) return;
+
+  let content;
+  if (isLoading) {
+    content = [1, 2, 3].map((n) => <DashboardQuizCardSkeleton key={n} />);
+  } else if (isError) {
+    content = (
+      <div className="col-span-1 lg:col-span-3 flex justify-center items-center">
+        <div className="flex flex-col justify-center items-center gap-y-2 text-red-500">
+          <TriangleAlert />
+          {error?.message || "Something went wrong"}
+        </div>
+      </div>
+    );
+  } else if (data?.data?.length > 0) {
+    content = data?.data?.map(({ id, title, description }) => (
+      <DashboardQuizCard
+        key={id}
+        title={title}
+        description={description}
+        id={id}
+      />
+    ));
+  }
 
   return (
     <main className="flex-grow p-10">
@@ -37,18 +63,7 @@ const DashboardContainer = () => {
           </div>
         </Link>
 
-        <DashboardQuizCard
-          title="JavaScript Basics Quiz"
-          description="Test knowledge of core JavaScript"
-        />
-        <DashboardQuizCard
-          title="React Hooks Quiz"
-          description="Test knowledge of core JavaScript"
-        />
-        <DashboardQuizCard
-          title="Backend vs. Frontend Quiz"
-          description="Test knowledge of core JavaScript"
-        />
+        {content}
       </div>
     </main>
   );
