@@ -13,12 +13,7 @@ import QuizQuestionForm from "../components/ui/quiz-question-form";
 import useAxios from "../hooks/useAxios";
 
 const DashboardQuestionsSetupContainer = () => {
-  const [editingQuiz, setEditingQuiz] = useState({
-    question: null,
-    options: null,
-    correctAnswer: null,
-    id: null,
-  });
+  const [editingQuiz, setEditingQuiz] = useState(null);
   const { api } = useAxios();
   const { id } = useParams();
 

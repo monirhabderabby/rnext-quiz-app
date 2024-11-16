@@ -75,6 +75,7 @@ const QuestionCard = ({
         <div className="space-y-2">
           {options.map((opt) => (
             <RadioButton
+              key={opt}
               opt={opt}
               isChecked={Boolean(correctAnswer == opt)}
               name={opt}

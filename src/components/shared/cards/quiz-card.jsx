@@ -1,9 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const QuizCard = ({ title, description, isAttempt = false }) => {
+const QuizCard = ({ title, description, thumbnail, id, isAttempt = false }) => {
   return (
-    <a
-      href="./quiz_page.html"
+    <Link
+      to={`/quiz/${id}`}
       className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] cursor-pointer group relative"
     >
       <div className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">
@@ -22,12 +23,20 @@ const QuizCard = ({ title, description, isAttempt = false }) => {
         </div>
       )}
       <img
-        src="https://utfs.io/f/a8K5FEXfuFBqvxRajj7U0OuMSKfwbr8TozCN9scY2W5dgGLI"
+        src={thumbnail}
         alt="JavaScript Hoisting"
         className="w-full h-full object-cover rounded mb-4 transition-all "
       />
-    </a>
+    </Link>
   );
 };
 
 export default QuizCard;
+
+export const QuizCardSkeleton = () => {
+  return (
+    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow min-h-[450px] cursor-pointer group relative animate-pulse">
+      <div class="absolute w-full h-full top-0 bg-gray-200"></div>
+    </div>
+  );
+};
