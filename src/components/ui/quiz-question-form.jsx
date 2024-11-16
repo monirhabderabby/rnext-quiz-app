@@ -1,23 +1,26 @@
-// Packages
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CircleCheck, TriangleAlert } from "lucide-react";
 import React, { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+
+// Local import
 import useAxios from "../../hooks/useAxios";
 
-const QuizQuestionForm = () => {
+const QuizQuestionForm = ({ initialData, setEditingQuiz }) => {
   const { id } = useParams(); // Get quiz ID from URL params
   const { api } = useAxios();
+  const queryClient = useQueryClient();
 
   // Mutation setup for submitting form data
   const { isPending, mutate } = useMutation({
     mutationKey: ["questions"],
-    mutationFn: (body) => api.post(`/admin/quizzes/${id}/questions`, body),
+    mutationFn: (body) =>
+      initialData
+        ? api.patch(`/admin/questions/${initialData?.id}`, body) // For edit
+        : api.post(`/admin/quizzes/${id}/questions`, body), // For create
   });
-
-  const queryClient = useQueryClient();
 
   // initialize react hook form
   const {
@@ -26,6 +29,8 @@ const QuizQuestionForm = () => {
     formState: { errors },
     handleSubmit,
     reset,
+    watch,
+    setValue,
   } = useForm({
     defaultValues: {
       question: "",
@@ -34,10 +39,30 @@ const QuizQuestionForm = () => {
         { id: 2, value: "" },
         { id: 3, value: "" },
         { id: 4, value: "" },
-      ], // Initialize with 4 empty options
+      ],
       correctAnswer: "",
     },
   });
+
+  // Dynamically update form when `initialData` changes
+  useEffect(() => {
+    if (initialData) {
+      const formattedOptions = initialData?.options?.map((option, index) => ({
+        id: index + 1,
+        value: option,
+      }));
+
+      reset({
+        question: initialData.question,
+        options: formattedOptions,
+        correctAnswer: initialData.correctAnswer,
+      });
+    }
+
+    return () => {
+      reset();
+    };
+  }, [initialData, reset]);
 
   // Dynamic field array for managing options
   const { fields } = useFieldArray({
@@ -47,13 +72,13 @@ const QuizQuestionForm = () => {
 
   // Display error toast if correct answer selection is invalid
   useEffect(() => {
-    if (errors["correctAnswer"]) {
-      toast.error(errors["correctAnswer"].message, {
+    if (errors.correctAnswer) {
+      toast.error(errors.correctAnswer.message, {
         duration: 5000,
         className: "text-red-500",
       });
     }
-  }, [errors["correctAnswer"]]);
+  }, [errors.correctAnswer]);
 
   const handleQuestionAdd = (formData) => {
     const correctAnswerIndex = parseInt(formData.correctAnswer);
@@ -77,10 +102,23 @@ const QuizQuestionForm = () => {
         });
       },
       onSuccess: () => {
-        toast.success("Question added successfully!", {
-          icon: <CircleCheck className="h-5 w-5 text-green-500" />,
-          duration: 5000,
-        });
+        toast.success(
+          initialData
+            ? "Question updated successfully!"
+            : "Question added successfully!",
+          {
+            icon: <CircleCheck className="h-5 w-5 text-green-500" />,
+            duration: 5000,
+          }
+        );
+        if (initialData) {
+          setEditingQuiz({
+            question: null,
+            options: null,
+            correctAnswer: null,
+            id: null,
+          });
+        }
         reset();
         queryClient.invalidateQueries(["quizzes"]);
       },
@@ -89,7 +127,9 @@ const QuizQuestionForm = () => {
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit(handleQuestionAdd)}>
-      <h2 className="text-xl font-bold text-foreground">Create Quiz</h2>
+      <h2 className="text-xl font-bold text-foreground">
+        {initialData ? "Edit Quiz Question" : "Create Quiz Question"}
+      </h2>
 
       {/* Question Title */}
       <div>
@@ -130,6 +170,8 @@ const QuizQuestionForm = () => {
                 required: "Select the correct answer",
               })}
               value={index}
+              checked={watch("correctAnswer") === field.value}
+              onChange={() => setValue("correctAnswer", field.value)}
               className="text-primary focus:ring-0 w-4 h-4"
             />
             <label htmlFor={`optionText${index}`} className="sr-only">
@@ -138,7 +180,7 @@ const QuizQuestionForm = () => {
             <input
               {...register(`options.${index}.value`, {
                 required: "Write a quiz option",
-              })} // Register the value field specifically
+              })}
               type="text"
               id={`optionText${index}`}
               className="w-full p-2 bg-transparent rounded-md text-foreground outline-none focus:ring-0"
@@ -159,7 +201,11 @@ const QuizQuestionForm = () => {
         type="submit"
         className="w-full bg-primary text-white text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors"
       >
-        {isPending ? "Saving..." : "Save Quiz"}
+        {isPending
+          ? "Saving..."
+          : initialData
+          ? "Update Question"
+          : "Create Question"}
       </button>
     </form>
   );

@@ -4,7 +4,15 @@ import React from "react";
 import { toast } from "sonner";
 import useAxios from "../../../hooks/useAxios";
 
-const QuestionCard = ({ question, options, correctAnswer, questionId }) => {
+const QuestionCard = ({
+  question,
+  options,
+  correctAnswer,
+  questionId,
+  editingQuiz,
+  setEditingQuiz,
+  index,
+}) => {
   const { api } = useAxios();
   const queryClient = useQueryClient();
 
@@ -35,25 +43,42 @@ const QuestionCard = ({ question, options, correctAnswer, questionId }) => {
     }
   };
 
+  const isEditingOn = questionId === editingQuiz?.id;
+
+  const handleEditing = () => {
+    if (isEditingOn) {
+      setEditingQuiz({
+        question: null,
+        options: null,
+        correctAnswer: null,
+        id: null,
+      });
+    } else {
+      setEditingQuiz({
+        question: question,
+        options: options,
+        correctAnswer: correctAnswer,
+        id: questionId,
+      });
+    }
+  };
   return (
     <div className="rounded-lg overflow-hidden shadow-sm mb-4">
       <div className="bg-white p-6 !pb-2">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">{question}</h3>
+          <h3 className="text-lg font-semibold">{`${
+            index + 1
+          }. ${question}`}</h3>
         </div>
 
         {/* Displaying answer options */}
         <div className="space-y-2">
           {options.map((opt) => (
-            <label className="flex items-center space-x-3" key={opt}>
-              <input
-                type="radio"
-                name="answer1"
-                className="form-radio text-buzzr-purple"
-                checked={correctAnswer === opt} // Show correct answer as checked
-              />
-              <span>{opt}</span>
-            </label>
+            <RadioButton
+              opt={opt}
+              isChecked={Boolean(correctAnswer == opt)}
+              name={opt}
+            />
           ))}
         </div>
       </div>
@@ -70,8 +95,9 @@ const QuestionCard = ({ question, options, correctAnswer, questionId }) => {
         <button
           className="text-primary hover:text-primary/80 font-medium"
           disabled={isPending} // Disable button while pending
+          onClick={handleEditing}
         >
-          Edit Question
+          {isEditingOn ? "Cancel Edit" : "Edit Question"}
         </button>
       </div>
     </div>
@@ -79,3 +105,17 @@ const QuestionCard = ({ question, options, correctAnswer, questionId }) => {
 };
 
 export default QuestionCard;
+
+const RadioButton = ({ opt, isChecked, name }) => {
+  return (
+    <label className="flex items-center space-x-3" key={opt}>
+      <input
+        type="radio"
+        name={name}
+        className="form-radio text-buzzr-purple"
+        checked={isChecked}
+      />
+      <span>{opt}</span>
+    </label>
+  );
+};

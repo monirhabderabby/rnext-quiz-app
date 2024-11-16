@@ -1,7 +1,7 @@
 // Packages
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, TriangleAlert } from "lucide-react";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 // Local imports
@@ -13,6 +13,12 @@ import QuizQuestionForm from "../components/ui/quiz-question-form";
 import useAxios from "../hooks/useAxios";
 
 const DashboardQuestionsSetupContainer = () => {
+  const [editingQuiz, setEditingQuiz] = useState({
+    question: null,
+    options: null,
+    correctAnswer: null,
+    id: null,
+  });
   const { api } = useAxios();
   const { id } = useParams();
 
@@ -22,7 +28,7 @@ const DashboardQuestionsSetupContainer = () => {
     queryFn: () => api.get(`/admin/quizzes`),
   });
 
-  const { currentQuiz, questions } = useMemo(() => {
+  const { currentQuiz, questions, setId } = useMemo(() => {
     const quizSetLists = data?.data;
 
     // Find the quiz with the specific id
@@ -34,29 +40,16 @@ const DashboardQuestionsSetupContainer = () => {
     return {
       currentQuiz: current,
       questions: current?.Questions || [],
+      setId: current?.id,
     };
   }, [data?.data]);
 
   let content;
 
   if (isLoading) {
-    content = (
-      <div className="w-[calc(100%-256px)] min-h-screen flex justify-center items-center">
-        <div className="flex flex-col items-center gap-y-2">
-          <Loader2 className="animate-spin" />
-          <p>Retrieving data for you...</p>
-        </div>
-      </div>
-    );
+    content = <LoadingState />;
   } else if (isError) {
-    content = (
-      <div className="w-[calc(100%-256px)] min-h-screen flex justify-center items-center">
-        <div className="flex flex-col justify-center items-center gap-y-2 text-red-500">
-          <TriangleAlert />
-          {error?.message || "Something went wrong"}
-        </div>
-      </div>
-    );
+    content = <ErrorState error={error} />;
   } else {
     content = (
       <main className="md:flex-grow px-4 sm:px-6 lg:px-8 py-8">
@@ -78,7 +71,10 @@ const DashboardQuestionsSetupContainer = () => {
                 description={currentQuiz?.description}
               />
 
-              <QuizQuestionForm />
+              <QuizQuestionForm
+                initialData={editingQuiz}
+                setEditingQuiz={setEditingQuiz}
+              />
             </div>
 
             {/* <!-- Right Column --> */}
@@ -88,10 +84,13 @@ const DashboardQuestionsSetupContainer = () => {
                 ({ id, question, options, correctAnswer }, index) => (
                   <QuestionCard
                     key={id}
-                    question={`${index + 1}. ${question}`}
+                    question={question}
                     options={options}
                     correctAnswer={correctAnswer}
                     questionId={id}
+                    editingQuiz={editingQuiz}
+                    setEditingQuiz={setEditingQuiz}
+                    index={index}
                   />
                 )
               )}
@@ -131,5 +130,26 @@ const Nav = () => {
         </li>
       </ol>
     </nav>
+  );
+};
+
+const LoadingState = () => {
+  return (
+    <div className="w-[calc(100%-256px)] min-h-screen flex justify-center items-center">
+      <div className="flex flex-col items-center gap-y-2">
+        <Loader2 className="animate-spin" />
+        <p>Retrieving data for you...</p>
+      </div>
+    </div>
+  );
+};
+const ErrorState = ({ error }) => {
+  return (
+    <div className="w-[calc(100%-256px)] min-h-screen flex justify-center items-center">
+      <div className="flex flex-col justify-center items-center gap-y-2 text-red-500">
+        <TriangleAlert />
+        {error?.message || "Something went wrong"}
+      </div>
+    </div>
   );
 };
