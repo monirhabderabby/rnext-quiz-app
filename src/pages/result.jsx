@@ -1,20 +1,25 @@
 // Packages
+import { useQuery } from "@tanstack/react-query";
+import { Loader2, TriangleAlert } from "lucide-react";
 import React from "react";
 import { useParams } from "react-router-dom";
 
 // Local imports
-import { useQuery } from "@tanstack/react-query";
-import { Loader2, TriangleAlert } from "lucide-react";
 import logo from "../assets/logo-white.svg";
 import ResultAnswerContainer from "../components/ui/result-answer-container";
 import ResultOverview from "../components/ui/result-overview";
+import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
-import calculateResults from "../lib/result";
+import calculateResults, { getAnswers } from "../lib/result";
 
 const Result = () => {
   const { id } = useParams();
   const { api } = useAxios();
+  const { auth } = useAuth();
 
+  const userEmail = auth?.user?.email;
+
+  // Fetch quiz attempt data
   const { isLoading, data, isError, error } = useQuery({
     queryKey: ["result", id],
     queryFn: () => api.get(`/quizzes/${id}/attempts`),
@@ -28,14 +33,19 @@ const Result = () => {
     content = <ErrorState error={error} />;
   } else if (data?.data) {
     const attemptData = data?.data?.data;
+
+    const { correct_answers, submitted_answers } = getAnswers(
+      attemptData?.attempts,
+      userEmail
+    ); // Parsed submitted answers and correct answers
+
     const totalQuestion = attemptData?.quiz?.total_questions;
-    const correctAnswers = attemptData?.attempts[0]?.correct_answers;
-    const submittedAnswers = attemptData?.attempts[0]?.submitted_answers;
+    const quizId = attemptData?.quiz?.id;
 
     const { totalCorrect, totalWrong } = calculateResults(
-      correctAnswers,
-      submittedAnswers
-    );
+      correct_answers,
+      submitted_answers
+    ); // Calculate results
 
     content = (
       <div className="bg-background text-foreground min-h-screen">
@@ -48,7 +58,11 @@ const Result = () => {
             correct={totalCorrect}
             wrong={totalWrong}
           />
-          <ResultAnswerContainer />
+          <ResultAnswerContainer
+            quizId={quizId}
+            submittedAnswers={submitted_answers}
+            correctAnswers={correct_answers}
+          />
         </div>
       </div>
     );
@@ -58,7 +72,7 @@ const Result = () => {
 
 export default Result;
 
-const LoaderState = () => {
+export const LoaderState = () => {
   return (
     <div className="min-h-screen w-full flex justify-center items-center">
       <div className="flex flex-col justify-center items-center text-center">
@@ -74,7 +88,7 @@ const LoaderState = () => {
   );
 };
 
-const ErrorState = ({ error }) => {
+export const ErrorState = ({ error }) => {
   return (
     <div className="min-h-screen w-full flex justify-center items-center">
       <div className="col-span-1 lg:col-span-3 flex justify-center items-center">

@@ -3,10 +3,13 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 
 // Local imports
-import progress from "../../assets/progressbar.svg";
+import { calculateResultPercentage } from "../../lib/result";
+import CirculerProgress from "./circuler-progress";
 
 const ResultOverview = ({ title, description, total, correct, wrong }) => {
   const { id } = useParams();
+
+  const percentage = calculateResultPercentage(total, correct, wrong);
   return (
     <div className="max-h-screen overflow-hidden hidden lg:flex lg:w-1/2 bg-primary flex-col justify-center p-12 relative">
       <div>
@@ -51,7 +54,7 @@ const ResultOverview = ({ title, description, total, correct, wrong }) => {
                 <p>Your Mark</p>
               </div>
               <div>
-                <img src={progress} className="h-20" />
+                <CirculerProgress percentage={percentage} />
               </div>
             </div>
           </div>

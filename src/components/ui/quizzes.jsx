@@ -37,6 +37,7 @@ const Quizzes = () => {
       </div>
     );
   } else if (data?.data?.data?.length > 0) {
+    console.log(data?.data?.data);
     content = (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {data?.data?.data?.map((item) => (
@@ -46,6 +47,7 @@ const Quizzes = () => {
             description={item?.description}
             thumbnail={item?.thumbnail}
             id={item?.id}
+            isAttempt={item?.is_attempted}
           />
         ))}
       </div>
