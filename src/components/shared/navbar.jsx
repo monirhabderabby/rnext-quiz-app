@@ -1,14 +1,16 @@
 // Packages
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // Local imports
-import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.svg";
 import useAuth from "../../hooks/useAuth";
 import { removeCookie } from "../../lib/cookies";
 
 const Navbar = () => {
   const { auth, setAuth } = useAuth();
+  const role = auth?.user?.role || "user";
+  const isAdmin = role.includes("admin");
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,8 +21,19 @@ const Navbar = () => {
 
   return (
     <header className="flex justify-between items-center mb-12">
-      <img src={logo} className="h-7" />
+      <Link to="/">
+        <img src={logo} className="h-7" />
+      </Link>
       <div>
+        {isAdmin && (
+          <Link
+            to="/dashboard"
+            className="px-4 py-2 rounded "
+            style={{ fontFamily: "Jaro" }}
+          >
+            Dashboard
+          </Link>
+        )}
         {!auth && (
           <Link
             to="/login"

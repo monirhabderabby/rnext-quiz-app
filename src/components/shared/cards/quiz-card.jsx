@@ -2,9 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const QuizCard = ({ title, description, thumbnail, id, isAttempt = false }) => {
+  const redirectTo = isAttempt ? `/quiz/${id}/result` : `/quiz/${id}`;
   return (
     <Link
-      to={`/quiz/${id}`}
+      to={redirectTo}
       className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] cursor-pointer group relative"
     >
       <div className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">

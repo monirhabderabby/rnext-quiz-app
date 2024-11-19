@@ -1,8 +1,18 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import logo from "../assets/logo-white.svg";
+import useAuth from "../hooks/useAuth";
+import { removeCookie } from "../lib/cookies";
 
 const Dashboard = () => {
+  const { setAuth } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    removeCookie("user");
+    setAuth(null);
+    navigate(0);
+  };
   return (
     <div className="bg-gray-100 min-h-screen flex">
       <aside className="w-64 bg-primary p-6 flex flex-col">
@@ -48,12 +58,12 @@ const Dashboard = () => {
             </li>
 
             <li>
-              <a
-                href="#"
-                className="block py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary"
+              <button
+                onClick={handleLogout}
+                className="block w-auto py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary"
               >
                 Logout
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
@@ -67,6 +77,7 @@ const Dashboard = () => {
 export default Dashboard;
 
 const Profile = () => {
+  const { auth } = useAuth();
   return (
     <div className="mt-auto flex items-center">
       <img
@@ -74,7 +85,7 @@ const Profile = () => {
         alt="Mr Hasan"
         className="w-10 h-10 rounded-full mr-3 object-cover"
       />
-      <span className="text-white font-semibold">Saad Hasan</span>
+      <span className="text-white font-semibold">{auth?.user?.full_name}</span>
     </div>
   );
 };

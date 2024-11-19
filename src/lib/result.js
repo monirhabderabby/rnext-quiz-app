@@ -32,7 +32,7 @@ function calculateResultPercentage(total, correct, wrong) {
   }
 
   const percentage = (correct / total) * 100;
-  return percentage.toFixed(2); // Return the percentage rounded to 2 decimal places
+  return percentage; // Return the percentage rounded to 2 decimal places
 }
 
 function getAnswers(attempts, userEmail) {
@@ -81,4 +81,58 @@ const calculateAnswerSelection = (
   };
 };
 
-export { calculateAnswerSelection, calculateResultPercentage, getAnswers };
+// Calculates the leaderboard positions based on user performance.
+const calculateLeaderboard = (data) => {
+  // Calculate total marks for each user
+  const leaderboard = data.map((entry) => {
+    const totalMarks = entry.correct_answers.reduce((sum, correctAnswer) => {
+      const submittedAnswer = entry.submitted_answers.find(
+        (answer) => answer.question_id === correctAnswer.question_id
+      );
+      return submittedAnswer && submittedAnswer.answer === correctAnswer.answer
+        ? sum + correctAnswer.marks
+        : sum;
+    }, 0);
+
+    return {
+      id: entry.user.id,
+      name: entry.user.full_name,
+      email: entry.user.email,
+      totalMarks,
+    };
+  });
+
+  // Sort by total marks in descending order
+  leaderboard.sort((a, b) => b.totalMarks - a.totalMarks);
+
+  // Assign unique positions
+  leaderboard.forEach((entry, index) => {
+    entry.position = index + 1;
+  });
+
+  // Return the final leaderboard with required fields
+  return leaderboard.map(({ id, name, email, position, totalMarks }) => ({
+    id,
+    name,
+    email,
+    position,
+    totalMarks,
+  }));
+};
+
+// Helper function to convert a number to ordinal format
+const toOrdinal = (num) => {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const value = num % 100;
+  return `${num}${
+    suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0]
+  }`;
+};
+
+export {
+  calculateAnswerSelection,
+  calculateLeaderboard,
+  calculateResultPercentage,
+  getAnswers,
+  toOrdinal,
+};

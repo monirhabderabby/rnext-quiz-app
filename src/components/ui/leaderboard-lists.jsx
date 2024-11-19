@@ -1,21 +1,34 @@
 import React from "react";
+import { toOrdinal } from "../../lib/result";
 
-const LeaderboardLists = () => {
+const LeaderboardLists = ({ leaderboard, userEmail }) => {
   return (
     <ul className="space-y-4">
-      <LeaderboardItem name="SPD Smith" position="1st" point="2,340" />
-      <LeaderboardItem name="Monir Hossain" position="2nd" point="2,340" />
-      <LeaderboardItem name="Mehedi Hasan" position="3rd" point="2,340" />
-      <LeaderboardItem name="Mayesa" position="4th" point="2,340" />
+      {leaderboard?.map(({ email, id, name, position, totalMarks }) => {
+        const oridinalPosition = toOrdinal(position);
+        return (
+          <LeaderboardItem
+            key={id}
+            name={name}
+            position={oridinalPosition}
+            point={totalMarks}
+            highlight={email === userEmail}
+          />
+        );
+      })}
     </ul>
   );
 };
 
 export default LeaderboardLists;
 
-const LeaderboardItem = ({ name, position, point }) => {
+const LeaderboardItem = ({ name, position, point, highlight }) => {
   return (
-    <li className="flex items-center justify-between">
+    <li
+      className={`flex items-center justify-between ${
+        highlight && "bg-green-100/80"
+      }`}
+    >
       <div className="flex items-center">
         <img
           src="https://avatar.iran.liara.run/public/boy"

@@ -17,7 +17,8 @@ const QuizPlaySidebar = ({ data, participated }) => {
           </div>
 
           <div className="w-fit bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-2">
-            Participation : {participated?.length}
+            Participation :{" "}
+            {participated?.length === 0 ? 1 : participated?.length}
           </div>
 
           <div className="w-fit bg-gray-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-2">
